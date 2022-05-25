@@ -1,0 +1,430 @@
+Curso PHP Laravel
+
+Ambiente de desenvolvimento:
+
+-> Instalar PHP
+-> Instalar Composer 
+-> A partir do composer instalar o Laravel Installer com o comando "composer global require laravel/installer"
+-Fica opicional a criação do projeto no composer ou Installer
+
+Iniciando o projeto:
+
+-> O projeto pode ser iniciado pelo composer ou pelo Installer
+
+-Composer: "composer create-project laravel/laravel example-app"
+ -Pode-se usar "x.y" no final da linha para especificar a versão
+ -Pode-se usar --prefer-dist depois da palavra install para selecionar a preferência do distribuidor
+
+-LaravelInstaller: "laravel new example-app"
+
+-> Em ambos os métodos usar o artisan para subir o servidor local ("php artisan serve --port:xxxx")
+
+Rotas (Routes):
+
+-> As  rotas no Laravel são divididas em 4:
+ -API: Rotas que retornam respostas (Api's)
+ -Channels: Rotas para "respostas em tempo real" (WebSocket)
+ -Console: Rotas personalizadas
+ -Web: Rotas que retornam páginas web
+
+Controladores (controllers):
+
+-> Parte resposável pela regra de negócio, com foco na lógica da aplicação
+-Ná prática eles são Classes
+
+
+Views:
+
+-> Parte resposável pela exibição de conteúdo(saída) na aplicação:
+ -Podem ser processadas e retornadas pelo servidor (Modelo tradicional)
+ -Podem ser separadas e e conversaram com uma API (Modelo mais novo)
+
+-> No framework Laravel todas as views precisam seguir o padrão "view.blade.php", pois o Laravel utiliza o recurso Blade para renderizar as Views
+-> Ao renderizar Views nos Laravel, usa-se o método nativo do framework "view()" e passa-se 
+   como parâmetro o caminho da view (.blade.php). Para separar os sub-diretórios usa-se "."
+
+Rotas 2:
+
+-> Para enviar parâmetros por rota utiliza-se "{}", exemplo: "Route::get('/teste/{parametro}', ação) "
+ -Rotas com mesmo nome mas tendo diferença de parâmetros são entendidas como diferentes pelo Laravel
+ -Parâmetros com "?" São opicionais, exemplo: "/teste/{parametro?}"
+  -Deve definir um valor padrão no callback, exemplo: "function($opicinal = 'opicional') {}"
+  -Deve-se sempre utilizar o parâmetros opicionais da direita para a esquerda para não ocasionar problemas
+
+-> Tratando parâmetros de rotas com expressões regulares
+ -chamando o método "->where()" podemos setar uma expressão regular para tratar os parâmetros
+  exemplo: Route::get('/teste/{parametro?}', function(string $parâmetro = 'teste', ação) {})->where('parametro', '[A-Za-z]+')
+
+Agrupamento de rotas
+
+-> No Laravel você pode agrupar rotas usando um prefixo, o método "group()" é o responsável por isso e espera como parâmetro um callback contendo as rotas
+ -Exemplo: Route::prefix('/prefixo')->group(function() {Route::get('/rota', ação)...})
+
+Nomeando Rotas:
+
+-> No Laravel você pode nomear rotas usando o método "name()" após a declaração da rota
+ -Exemplo: "Route::get('/rota', ação)->name('app.rota')"
+ -Dessa forma você está criando um apelido para sua rota que poderá ser usado e interpretado dentro do código
+ -A rota nomeada pode ser retornada pela função "route('apelido')"
+
+Redirecionamento de Rotas
+
+-> O conceito é basicamente redirecionar o usuario para outra rota rota quando ele entrar em uma
+ -Exemplos:
+  -"Route::redirect('rota1', 'rota2')"
+  -"Route::get('rota1', function() {return redirect()->route('apelido')})"
+
+Rota de contigência (fallback)
+
+-> A rota de fallback é para onde o usuário sera redirencionado quando acessar um rota indisponível (por exemplo uma rota inexistente)
+ -Exemplo: "Route::fallback(function() {return 'Rota não encontrada!'})"
+
+Avançando em Controllers e Views
+
+-> Passar parâmetros para os controladores
+
+ - Da mesma forma como passamos para os callbacks, nos métodos das classes controladoras 
+   temos que passar como parâmetros os mesmos da url da rota respeitando a ordem
+ -Exemplo: "public function metodoController($parametro) {}"
+
+-> Encaminhando parâmetros dos controladores para as views
+
+ -Array associativo: passa-se como segundo parâmetro da "view()" um array com 
+  indices apelidados, Ex: "view(View.view, ['p1' => $p1, 'p2' => $p2])"
+
+ -Compact(): Na prática ele cria um array associativo, porém é mais enxuto e utiliza como parÂmetro o nome das 
+  variáveis que serão passadas, Ex: "Compact('p1', 'p2')"
+
+ -With(): Método do Laravel para passar parâmetros para as views, a sintaxe é "view(View.view)->with('p1', $p1)->with(...)..."
+  O primeiro parâmetro é o nome da variável na view e o segundo o dado em sí
+
+Blade (Motor de renderização de views do Laravel):
+
+-> Quando usamos o método "view()" e passamos como parâmetro a view, é o blade que estará a renderizando.
+-> É possível usar a sintaxe pura do PHP  no blade, embora seja pouco usual
+
+-> Comentários no Blade:
+ - Sintaxe: {{--meu comentario--}}
+
+-> PHP puro
+ - Sintaxe: @php Código PHP  @endphp
+
+-> {{}}: Equivale a tag de impressão curta do PHP <?=?>
+
+-->Extra: Highlight para Laravel blade: extensão para vs code Laravel blade
+
+-->Extra: Para escapar da interpretação do blade exibir como texto um comando do  usa-se commat;(comando sem @) ou @{{}}
+
+-> Na Sintaxe Blade utilizamos o "@" para indicar um comando, e não utilizamos ";" para encerrar!
+ - @php: comando para inserir código php (funciona como <?php?>)
+ - @if/@else: condicional no blade
+ - @dd: O comando dd de forma resumida e simples, seria a mistura do var_dump + die
+ - @unless: Equivale ao if reverso "@if(!expressão)"
+ - @isset: Equivale a if(isset($var)){...} OBS: O isset testa a EXISTÊNCIA de uma variável
+ - @empty: Equivale a if(empty($var)){...} OBS: O empty testa se a variável está VAZIA, Ex: 0, '0', [], false ...
+ - Operador ternário (Nativo do PHP): 'expessão ? verdadeiro : falso'
+ - Operador de condicional de valor default: $var ?? 'valor default' (Funciona parecido com isset(), verifando se a variavel existe ou o valor é null)
+ - @switch: @case(caso) seguido de @break e no final uma ação default @default
+ - @for: Funciona exatamente como o for nativo do php, mas utilizandoa sintaxe blade
+ - @while: Funciona exatamente como o while nativo do php, mas utilizandoa sintaxe blade
+ - @foreach: Laço de repetição utilizado para percorrer um array, EX: @foreach($array[], $indice, $copiaDoArray)
+ - @forelse: junção do foreach + condicional que verifica se o array passado como parâmetro está vazio, desviando o código.
+   - Nos laços foreach e forelse como não temos uma variável de controle ($i) usamos a variável $loop para interação, 
+     Ex: $loop->iteration (atributo do objeto $loop que retorna a interação atual)
+
+--> Extra: Para referêncriar caminhos/diretorios nos comandos Blade (@comando) Usa-se '.' ao invés de '/', Ex: 'dir.subDir.arquivo'
+
+O que são assets:
+ -> Os assets no contexto do frontend é tudo aquilo usado para complementar o frontend, midia em geral como:
+   - Imagens
+   - Videos
+   - Logos e banners
+   - Scripts e Css...
+
+ -> Em suma, tudo que complementa o HTML
+
+Incluindo assets nas Views do Laravel (Usando o método Helper asset())
+ -> Sempre colocar os assets na pasta public para que possam ser acessados no diretório público
+ -> Usar referencias dinâmicas com {{asset('diretorio')}}
+ -> Por padrão a função asset sempre aponta para a pasta public
+
+Trabalhando com Templates no laravel Blade
+
+ -> Podemos criar uma View que servirá como base para outras (template), e para utilizarmos usamos:
+
+    - @extends para importar a view de template
+    - @section/@endsection para delimitar o conteúdo exclusivo da view que receberá o template
+	- As sections podem guardar um bloco (@section('apelido')@endsection) Ou Passar um parâmetro (@section('apelido', $parametro))
+    - @yield para mostrar onde determinada seção será incluida no arquivo de template
+
+-> Outras Maneiras de manipular Templates no Blade:
+
+   - @include: O comando mais simples, ele simplesmente importa uma blade para dentro de outra
+   - @component: Pode ser usado de duas maneiras:
+     - $slot: declaramos uma variável slot dentro da view base e passamos o html que será inserido dentro do bloco @component()/@endcomponent
+     - Array ascossiativo como parâmetro: Pasamos como segundo parâmetro do comando '@component()' um array contendo os dados que serão tratados na view base 
+
+ -> Diferença entre @extends/@yield, @include e @component()
+
+    - O @extends estende a view de template e interage com @section da view que recebe o @extends
+    - O @include Literalmente importa o código de uma view para dentro de outra
+    - O @component Interage com inserção de código e parâmetros, é bem parecido com o @extends
+
+
+Enviando Formulários
+
+-> Observações gerais: Na hora de enviar um formulário, o método de envio deve ser compatível com a rota, Ex: método POST rota POST.
+   E dependendo do caso, como por exemplo o método POST, é necessário declarar o @csrf que gera um token indetificando o form
+
+-> @csrf: Um comando Blade para gerar um token nos formularios enviado via POST, o que evita manobras de cross site, deixando a plicação mais segura
+
+Trabalhando com Models
+
+-> Os Models são classes que representam modelos de dados que podem posteriormente ser usandos no Banco de dados
+
+-> Criando um Model:
+   - utilizando make do artisan: php artisan make:model "nomeModelo" -m
+   - A flag -m ser para criar uma 'migration' permite gerenciar as tabelas do banco de dados.
+
+
+Migrations
+
+-> Script responsáveis por realizar uma tarefa na Banco de dados
+   - Criando uma tabela por uma migration: php artisan make:migration "create_nomeMigration_table" 
+     - Exemplo de uma migration para criar uma tabela no banco de dados
+
+-> Alterando uma Tabela do Banco com uma migration: O método é o mesmo, criando a migração e no método 'up()' usamos o objeto Schema para chamar o método da ação que precisamos
+
+-> Métodos 'up()' e 'down()' das migrations:
+   - O método up como já visto é executado no comando php artisan migrate, e executa as ações escritas no script
+   - O método down é responsável por reverter o que é feito no método up (rollback) com o comando php artisan migrate:rollback, e executa as a lógica contrária das ações do método up
+     - OBS: a flag --step=pode ser passada para definir os passos que deseja avançar, caso omitida o rollback dará apenas um passo.  
+
+-> Modificadores Nullable e Default: no Objeto BluePrint(Tabela) podemos passar após o primeiro método alguns modificadores. Ex: '$table->string->nullable()'
+   - Nullable: Faz o campo aceitar valores nulos.
+   - Default: Seta valores padrões para os campos caso sejam nulos.
+
+->Relacionamento 1 pra 1:
+  - Devemos declarar o campo que recebe a chave estrangeira com a mesma estrutura do campo na tabela de referência 
+  - Devemos fazer a 'constraint' e e informar que o qual campo receberá uma chave estrangeira e e sua referência, 
+    EX: $table->foreing('campo')->references('campo_de_referencia')->on('tabela_de_referencia')'
+  - No relacionamento de 1 pra 1 devemos setar o campo como 'unique' para que não se repitam valores '$table->unique('campo')'
+
+->Relacionamento 1 pra N (Varios):
+  - O processo é o mesmo que o 1 pra 1, com a diferença que não setamos 'unique' pois os valores podem se repetir
+
+->Relacionamento N pra N (Varios pra Varios):
+  - Nesse tipo de relacionamento temos uma terceira tabela auxiliar que armazena como foreing keys o id das duas tabelas que irão conversar.
+    Basicamente são dois relacionamentos de 1 pra N
+
+->Modificardor after():
+  - Ele serve para indicarmos onde queremos que seja inserida uma nova coluna na tabela por exemplo.
+  - Ex: $table->string('coluna')->after('coluna') 
+
+ 
+->Migration:status
+  - Basicamente faz uma consulta a tabela migration, listando-as e mostrando quais foram ou não executadas
+
+->Migration:reset
+  - Faz um rollback de todas as migrations
+
+->Migration:refresh
+  - Faz um rollback de todas as migrations, e depois executa o migrate recriando todas as tabelas
+
+->Migration:fresh
+  - Dropa todos os objetos do banco, e depois executa o migrate recriando todas as tabelas
+
+
+Eloquente ORM: O Eloquent é ORM embutido no Laravel, que fornece uma simples e linda implementação 
+do ActiveRecord Pattern, para interagir com um banco de dados. Cada Model do Eloquent 
+cria um wrapper sobre a tabela no banco de dados que a ele está associado. 
+Isso faz com que cada instância de um Model seja uma representação de uma linha da tabela associada.
+
+Tinker (Shell do Php Laravel): O tinker é terminal nativo do Laravel que possibilita interação com o código php.
+Ele é comumente utilizado para testar classes de modelos e interagir com o ORM, mas pode instaciar e executar qualquer classe do projeto.
+
+-> Ao utilizar o tinker, não precisamos nem mesmo criar atributos para as classes pois eles são criados automaticamente em tempo de execução
+
+->Sistema de Nomeação de tabela dinâmica do Eloquent:
+  - O Eloquent gera dinâmicamente o nome da tabela usando como parametro o Padrão CamelCase, 
+    porém devido as limitações como por exemplo o plural sempre com 's' no final podemos alterar 
+    o nome da tabela declrando um atributo protected '$table' que irá sempre sobrepor o gerado pelo
+    Eloquent
+
+->Primeiros passos com Eloquent ORM
+ - Utilizando o tinker, podemos instanciar a classe setar atrbutos dinamicamente com os mesmos nomes das colunas no banco
+ - Para fazermos um insert utilizamos o método save(), herdado da classe do ORM
+
+-->Podemos também executar tarefas no Eloquent através de métodos estáticos que são herdados pelos modelos que nós criamos, Exemplo:
+  - MeuModelo::create(['campo' => 'dado', 'campo2' => 'dado2' ...]);
+  - Nesse caso, este método estático faz um insert no banco através de um array associativo com o nome do campo e seu respectivo valor
+    - No caso do método estático, devemos declarar um atributo protected $fillable que será resposável por 
+      controlar os valores passados no array associativo
+
+->Método estático all():
+  - Esse método retorna uma 'coleção' de objetos do tipo do modelo, podemos utilizar o método toArray() do objeto para obter os dados em formato de array
+
+->Método estático find():
+  - Esse método retorna um ou mais registros do banco através do ID, No caso de apenas um registro ele retorna diretamente um objeto contendo o registro, no caso de mais ele retorna uma coleção
+
+->Método estático where():
+  - Esse método retorna um 'builder' de uma consulta que pode ser executada utilizando o método 'get()' posteriormente para retornar uma coleção
+  - Exemplo: Modelo::where('nome_da_coluna', 'operador', 'valor') 
+    - Detalhe: Se for utilizado o operador de igualdade só são necessários dois parâmetros (nome_coluna, 'valor')
+
+->Método estático whereIn():
+  - Uma variação do método where() que verifica a igualdade de um campo com N valores
+  - Exemplo: Modelo::whereIn('nome_coluna', [x, y, z])
+    - Essa consulta retornará todos os campos com a coluna igual a [x, y, z]
+  - Você pode ter o resultado oposto utilizando a método whereNotIn()
+
+->Método estático whereBetween():
+  - Uma variação do método where() que retorna os valores dentro de determinado intervalo
+  - Exemplo: Modelo::whereBetween('nome_coluna', [x, y])
+    - Essa consulta retornará todos os campos entre e igual a [x, y]
+  - Você pode ter o resultado oposto utilizando a método whereNotBetween()
+
+->Utilizando Vários where()'s na consulta: 
+  - Como o método where() retorna um objeto do tipo Builder, podemos a partir desse objeto chamar mais métodos e continuar "construindo" a consulta
+  - Exemplo: Modelo::where('nome_coluna', '<>', 'valor')->whereIn('nome_coluna', [x, y])...
+  - Por padrão, where's encadeados no objeto Builder são tratados com o operador 'and' se quisermos mudar para 'or' por exemplo passamos os métodos com 'or' no começo
+    - Exemplo: Modelo::where(nome_coluna, valor)->orWhere(nome_coluna', valor)
+
+->whereNull:
+  - Retorna todos os elementos com valores 'nulos'
+  - O seu oposto é o método whereNotNull()
+
+->whereDate(), whereDay(), whereYear(), whereMonth() e whereTime():
+  - Todos os respectivos where's acima são para retornar registros de data (timestamps), cada método é responsável pela sua respectiva comparação
+  - Ex: whereDate('updated_at', '2022-01-01') ou whereTime('created_at' '>' '20:00:00')
+
+->whereColumn():
+  - Esse método faz uma comparação entre colunas
+  - Ex: Modelo::whereColumn('coluna_1', '=', 'coluna_2')
+
+->Operando Where's com subgrupos:
+  - Para operar uma where SQL com subgrupos na expressão, como por exemplo: 
+   'WHERE (tb_x or tb_y = 'nome') and (tb_id between 2 and 4 or tb_date in (2, 4))'
+    Devemos passar uma callback no parametro do where. exemplo: where(function($query) { $query->where(...)->orWhere(...) })->where(...)
+
+
+OrderBy (Ordenando as consultas)
+
+->Para ordenarmos as consultas com o orderBy, usamos o método orderBy da nossa classe de modelo, Ex:
+  - Modelo::orderBy('nome', 'asc')->get();
+  - Esse comando retornaria todos os registros ordenados pelo nome em ordem crescente
+  - OBS: O padrão de ordenação do método orderBy() é ASC (Crescente) então nesse caso o segundo paramentro pode ser omitido.
+  - OBS 2: Você pode encadear ordenamentos chamando o método novamente, Ex: orderBy(...)->orderBy(...)
+
+
+Iniciando com Collections
+- O framekwork laravel tem a classe de dados do tipo 'collection' que diversos métodos para nos auxiliar na manipulação dos dados
+- Quando executamos o método get() num objeto builder do eloquent ORM, ele retorna uma collection com os dados.
+
+->Principais métodos das collections
+  (Sintaxe: $Coleection->método();)
+  -> first(): Retorna o primeiro elemento da collection
+  -> last(): retorna o último elemento da collection
+  -> toArray(): retorna a collection como array
+  -> toJson(): retorna a collection como JSON
+  -> pluck(): retorna uma nova coleção contendo os dados apenas do parametro passado no método, 
+     pode-se passar uma segunda chave parâmetro para trasnformar em um array associativo
+
+
+Atualizando registros com Eloquent:
+
+-> Atualizar utilizando o método save do modelo: $modelo->coluna = novoValor; $modelo->save(); 
+-> Atualizar utilizando o método fill e save do modelo: $modelo->fill(['coluna1' => 'valor1', 'coluna2' => 'valor2']); $modelo->save();
+   - Detalhe, nesta técnica devemos ter declarado o atributo fillable no nosso modelo para permitir e controlar o uso de arrays associativos
+-> Atualizar utilizando o método where e update do modelo: $modelo->whereIn('id', [1, 2])->update(['coluna' => 'novoValor'])
+
+Excluindo registros com Eloquent:
+-> Uilizando o método delete(): $modelo->delete(), Ex: Modelo::find(1)->delete()
+-> Utilizando o método estático destroy(): Modelo::destroy(id) 
+   - Obs: o método estático destroy pode receber por parâmtro varios ids separados por virgula ou um array de collections representando os ids
+
+
+Soft Delete com Eloquent:
+
+-> Para usarmos o recurso de soft delete do eloquent devemos primeiro importar o namespace para dentro do nosso modelom, 
+   já que ele é um recurso a parte, Ex: use Illuminate\Database\Eloquent\SoftDeletes;
+   
+-> Depois devemos usar o recurso de Trait para importarmos os métodos e atributos da Classe SoftDeletes para dentro da nossa classe modelo
+   Obs: O recurso de Traits funciona como o extends, porém como não é possível extrender mais 
+        de uma classe importamos o namespace da outras classes para herdamos os métodos e atributos
+
+-> Após isso o campo deleted_at deve ser adicionado a sua tabela, podemos fazer isso com uma migração chamando o método, Ex: $table->softDeletes()
+
+-> Agora você já pode fazer softs deletes nos seus registros usando o método delete do seu modelo, caso queira deletar permanentemente, use o método forceDelete.
+
+Lidando e restaurando registros com Soft Delete:
+
+-> Para retornar um registro com soft delete podemos usar os métodos withTrashed (retorna registros ativos e inativos) e 
+   também onlyTrashed (retorna apenas registros inativos), ambos os métodos retornam um builder que pode continar sendo construido .
+
+-> Para restaurar um registro inativo com soft delete usamos o método restore(), Ex: $modelo->restore(); 
+
+
+Seeders:
+
+-> As seeders são classes que semeiam registros no banco de dados, para criar uma seeder use o comando: php artisan make:seeder nome_da_seeder
+-> Após criar a classe seeder, você pode colocar a lógica de criação de dados dentro do método run(). Depois você irá chamar essa classe dentro da classe "DatabaseSeeder" dentro do método run()
+   - Ex: $this->call(MeuSeeder::class);
+   Agora você pode executar as seeders uasndo o comando php artisan db:seed (voce pode passar a flag --class="nome da classe" para executar uma classe seeder específica)
+
+Factorys:
+-> Voce pode usar o recurso de factories do laravel para semear dados no banco.
+-> Para usar voce precisa criar uma factory com o comando php artisan make:factory "MeuModeloFactory" --model=MeuModelo (A flag --model serve para apontar para o modelo que a factory gerara os dados)
+-> Depois de criar e configurar a factory vc irá passar ela para o seu seeder com o helper factory(), Ex: factory(MeuModelo:class, numero_de_dados_gerados).
+-> Lembre-se de Chamar o seu seeder no método run do DatabaseSeeder, depois disso é só rodar o seeder com o comando db:seed
+
+
+Trabalhando com Formulários:
+  -> Ao enviar um formulário, estamos fazendo uma requisição ao servidor, todos esse dados ficam no objeto Request que pode ser acessado por um controlador.
+     Para recuperar todos os dados do formulário na requisição, podemos suar o método all(), e para retornar apenas um campo usamos o método input()
+  -> Para registrar os dados de um formulario no banco podemos usar o método estático create() do modelo e passar como parâmetro o $request->all() que retorna
+	um array associativo dos dados da requisição
+
+Validação de campos obrigatórios (required)
+-> A validação de campos nas requisições vai servir para fazer verificações antes de executar de fato a tarefa no banco, evitando que a aplicação quebre.
+-> No laravel nos temos o método validate que pode ser chamado na variavel $request, esse método recebe como parâmetro um array associativo com os indices
+   sendo os campos e o valor sendo o tipo de validação, Ex: $request()->validate('name' => 'required');
+-> Quando alguma das validações é violada o método validate() faz um redirect para a rota anterior e seta o erro na variavel $erros, que pode ser acessada por qualquer template blade
+-> Existem vários tipos de validação, required, max, min... Caso você queira passar mais de um parâmetro de validação para um campo você pode usar o pipe,
+   Ex: $request()->validate('name' => 'required|min:3|max:30|...'); 
+   Validaçao de email: $request()->validate('email' => 'required|email'); 
+   Unique: $request()->validate('email' => 'required|email|unique:site_contatos'); 
+
+Repopulando o formulário
+-> Ao fazer uma validação e a requisição não passar pela mesma, após os redirect back o formulario em questão estará vazio por conta do refresh
+  -> Para ajustar isso podemos usar o a função old() do template blade que retorna o campo da requisição anterior, Ex: {{ old('nome') }} dessa
+     forma, teremos o formulario repopulado após o refresh, com os dados anteriores da requisição
+
+Tratando erros na blade
+->  Para tratar erros vindo de backend podemos usar o varialvel "$errors" no contexto da blade. Podemos usar o metodo any() para verificar se ha algum erro
+    e podemos retornar o array de erros com o metodo all()
+-> outros metodos do objeto errors: has(), first() ...
+
+Middlewares
+-> Os middlewares sao utilizados para atuar entre a requisiçao e a resposta do servidor ao acessar uma rota
+-> Para criar um middleware utilizamos o comando artisan make:middleware 'nome'
+-> O middleware pode retornar um Clousure $next que continua a requisiçao ou um Response, Alem disso no middleware podemos manipular os mesmos
+-> E possivel chamar um middleware dentro de um controller no seu construtor, 
+   para isso precisamos passar o metodo middleware ($this->middleware(middleware::class)) dentro do construtor
+-> Para adicionar middlwares a todas as rotas precisamos acessar o arquivo kernel.php e adicionar os middlewares nos arrays dos tipos de rotas que queremos
+   Ex: web, api, ...
+
+-> Encadeando middlewares
+   -> Podemos executar varios middlewares em cascata no metodo middleware das rotas, assim que a requisiçao passa por um middleware ela
+      deve ser entregue ao proximo middleware da fila ou entao morrer ali mesmo caso a Clousure nao seja retornada EX: Route::middleware(m1, m2, ...)
+
+-> Middlewares em grupos de rotas
+   E possivel adicionar middlewares a grupos de rotas, chamando o metodo middleware no agrupamento e/ou prefixamento das rotas
+
+-> Parametros nos middlewares
+   Podemos passar parametros para os middlewares utilizando "middleware('apelido:param1,param2...')" e resgata-los no metodo handle do nosso middleware
+   informando os parametros logo apos a Clousure Ex: "handle($request, $next, $param1, $param2...)"
+
+-> Modificando a requisiçao no middleware
+   podemos tambem manipular a requisiçao no middleware, para isso precisamos resgatar a Clousure com a requisiçao atual e atribuir a uma variavel,
+   dessa forma podemos modifica-la e depois retornar a requisiçao modificada. Ex: '$modificada = $next($request); return $modificada->setStatusCode(500)'

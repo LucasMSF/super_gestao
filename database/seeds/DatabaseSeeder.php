@@ -1,0 +1,20 @@
+<?php
+
+use App\SiteContato;
+use Illuminate\Database\Seeder;
+
+class DatabaseSeeder extends Seeder
+{
+    /**
+     * Seed the application's database.
+     *
+     * @return void
+     */
+    public function run()
+    {
+        $this->call(SiteContatoSeeder::class);
+        $this->call(FornecedorSeeders::class);
+        $this->call(SiteContatoSeeder::class);
+        $this->call(MotivoContatoSeeder::class);
+    }
+}
