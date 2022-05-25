@@ -28,10 +28,11 @@ Route::get('/contato', 'ContatoController@contato')->name('site.contato');
 Route::post('/contato', 'ContatoController@registrarContato')->name('site.contatoPost');
 
 Route::prefix('/app')->middleware('autenticacao')->group(function() {
-    Route::get('/', function(){dd(session('usuario'));})->name('app.home');
-    Route::get('/clientes', function(){dd(session('usuario'));})->name('app.clientes');
-    Route::get('/fornecedores', 'FornecedorController@index')->name('app.fornecedores');
-    Route::get('/produtos', function(){return 'produtos';})->name('app.produtos');
+    Route::get('/', 'HomeController@index')->name('app.home');
+    Route::get('/sair', 'LoginController@sair')->name('app.sair');
+    Route::get('/clientes', 'ClientesController@index')->name('app.clientes');
+    Route::get('/fornecedores', 'FornecedoresController@index')->name('app.fornecedores');
+    Route::get('/produtos', 'ProdutosController@index')->name('app.produtos');
 });
 
 Route::get('/teste/{p1}/{p2}', 'TesteController@teste')->name('site.teste');

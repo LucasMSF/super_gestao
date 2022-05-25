@@ -42,4 +42,10 @@ class LoginController extends Controller
             return redirect()->back()->with('error', 'Usuario ou senha invalidos!');
         }
     }
+
+    public function sair()
+    {
+        session()->forget('usuasrio');
+        return redirect()->route('site.index');
+    }
 }

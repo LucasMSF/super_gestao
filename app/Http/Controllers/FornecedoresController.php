@@ -5,9 +5,10 @@ namespace App\Http\Controllers;
 use App\Fornecedor;
 use Illuminate\Http\Request;
 
-class FornecedorController extends Controller
+class FornecedoresController extends Controller
 {
-    public function index(Request $request) {
+    public function index(Request $request)
+    {
         /* $fornecedores = [
             0 => [
                 'nome' => 'Fornecedor 1',
