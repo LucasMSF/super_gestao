@@ -45,7 +45,7 @@ class LoginController extends Controller
 
     public function sair()
     {
-        session()->forget('usuasrio');
+        session()->forget('usuario');
         return redirect()->route('site.index');
     }
 }

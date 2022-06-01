@@ -46,7 +46,7 @@ class ContatoController extends Controller
 
         SiteContato::create($contact);
 
-        Mail::to($request->email)->send(new SendMailUser(['name' => $request->nome, 'email' => $request->email, 'tel' => $request->nome]));
+        // Mail::to($request->email)->send(new SendMailUser(['name' => $request->nome, 'email' => $request->email, 'tel' => $request->nome]));
 
         return redirect()->back()->with('info', 'Formulário enviado!');
     }

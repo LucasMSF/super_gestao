@@ -9,12 +9,8 @@
     <script src={{ asset('js/scripts/swal.js') }}></script>
     <title>Super Gestão (Cliente) - @yield('titulo')</title>
 </head>
-
 <body>
     @include('app.layouts._partials.topo')
-    <br>
-    <br>
-    <br>
     @yield('conteudo')
 </body>
 
